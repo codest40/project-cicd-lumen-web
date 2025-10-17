@@ -1,0 +1,21 @@
+# =======================================
+# PROMETHEUS CONFIGURATION FILE
+# =======================================
+# Purpose:
+# Defines global scraping settings and specifies targets (exporters or applications)
+# Prometheus should collect metrics from.
+# This configuration is used inside the Docker Compose Prometheus container.
+# ---------------------------------------
+# Usage:
+#   - Prometheus scrapes metrics from the web service every 5 seconds
+#   - The web app expose a /metrics endpoint accessible from within the network
+# ---------------------------------------
+
+global:
+  scrape_interval: 5s      # Default frequency for metric collection across all jobs
+
+scrape_configs:
+  - job_name: "flask_app"  # Logical name for the scrape target group
+    static_configs:
+      - targets: ["web:5000"]  # Target service: 'web' = container name from docker-compose
+                               # The port must match the one exposed by the Flask app

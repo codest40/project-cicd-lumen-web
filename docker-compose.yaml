@@ -1,0 +1,75 @@
+# ===========================
+# LUMEN PROJECT SYSTEM - DOCKER COMPOSE SETUP
+# ===========================
+# Purpose:
+# Defines a multi-service containerized environment for the Lumen Web app,
+# including monitoring (Prometheus + Grafana).
+# Enables local orchestration of app + observability stack using a single command.
+# ---------------------------
+# Usage:
+#   docker-compose up --build
+# ---------------------------
+
+# version: "3.9"
+
+services:
+  # -------------------------
+  #  WEB SERVICE (Flask App)
+  # -------------------------
+  web:
+    build: ./lumen_web               # Build the Flask app image from the Dockerfile in lumen_web/
+    image: lumen_web-image           # Name of the built image
+    container_name: lumen_web_container
+    ports:
+      - "5000:5000"                  # Expose container port 5000 to host
+    environment:
+      - DB_URL=${EXTERNAL_DB_URL}    # External DB URL (loaded from .env for portability)
+      - METRICS_PATH=/metrics        # Endpoint Prometheus scrapes
+    networks:
+      - lumen_net                    # Shared custom network for inter-service communication
+
+  # -------------------------
+  #  PROMETHEUS SERVICE
+  # -------------------------
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus_container
+    volumes:
+      # Mount custom Prometheus config (defines scrape targets, intervals, etc.)
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"                  # Prometheus UI available at localhost:9090
+    networks:
+      - lumen_net
+
+  # -------------------------
+  #  GRAFANA SERVICE
+  # -------------------------
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana_container
+    ports:
+      - "3000:3000"                  # Grafana UI available at localhost:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin           # Default Grafana login user
+      - GF_SECURITY_ADMIN_PASSWORD=admin       # Default Grafana password
+      - GF_USERS_ALLOW_SIGN_UP=false           # Disable public sign-ups for security
+    depends_on:
+      - prometheus                            # Ensure Prometheus starts before Grafana
+    volumes:
+      - grafana_data:/var/lib/grafana         # Persist Grafana dashboards & configs
+    networks:
+      - lumen_net
+
+# -------------------------
+# Persistent Volume Definitions
+# -------------------------
+volumes:
+  grafana_data:                     # Named volume to store Grafana data persistently
+
+# -------------------------
+# Network Configuration
+# -------------------------
+networks:
+  lumen_net:
+    driver: bridge                  # Default Docker bridge network for isolated communication

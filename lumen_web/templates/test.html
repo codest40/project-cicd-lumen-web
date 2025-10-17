@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>System Test Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9fafb;
+      color: #333;
+      margin: 0;
+      padding: 40px;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #007bff;
+      text-align: center;
+    }
+    .content {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .note {
+      background: #e8f4ff;
+      border-left: 4px solid #007bff;
+      padding: 10px;
+      margin: 20px 0;
+      border-radius: 5px;
+    }
+    .btn {
+      display: inline-block;
+      background: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+    .btn:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test Page</h1>
+  <div class="content">
+    <p>
+      This is a simple test page for validating your Flask setup, 🐳 Docker integration, and monitoring visibility.
+      This onfirms the app container is responding properly and serving static content.
+    </p>
+
+    <div class="note">
+      <strong>Note:</strong> This page is connected to the database — it’s a health check for your web layer.
+    </div>
+
+    <p>
+      Prometheus and Grafana services are runningg!
+      with basic metrics to track uptime, request counts, and latency.
+    </p>
+
+    <a href="/dashboard" class="btn">Back to Login</a>
+    <a href="/" class="btn">Next Page</a>
+  </div>
+</body>
+</html>

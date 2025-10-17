@@ -1,0 +1,20 @@
+
+## (Developer Reference Notes)**
+
+# =========================================================
+# QUICK REFERENCE - RENDER DEPLOY TRIGGER COMMAND
+# =========================================================
+# Purpose:
+# Manually trigger a Render deployment from the command line
+# using your service ID and API key.
+# ---------------------------------------------------------
+# Usage:
+# 1. Replace rnd_xxxx with your RENDER_API_KEY
+# 2. Replace srv-xxxx with your RENDER_SERVICE_ID
+# 3. Run in your terminal to manually trigger deployment
+
+curl -X POST \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer rnd_xxxx" \
+  -d '{"serviceId":"srv-xxxx"}' \
+  https://api.render.com/v1/services/srv-xxxx/deploys
