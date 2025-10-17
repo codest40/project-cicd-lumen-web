@@ -14,16 +14,9 @@ def handle_login():
 
     # Dummy auth for now
     if username == "admin" and password == "pass":
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('login'))
     else:
         return render_template('log.html', error="Invalid credentials")
-
-@app.route('/dashboard')
-def dashboard():
-    conn = get_db_connection()
-    if conn:
-        conn.close()
-    return render_template('dashboard.html')
 
 @app.route('/test')
 def test_page():
