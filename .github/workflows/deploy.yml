@@ -77,7 +77,7 @@ jobs:
       - name: Deploy to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID_LUMEN }}
         run: |
           echo "Triggering deploy on Render..."
           response=$(curl -s -o /tmp/response.json -w "%{http_code}" -X POST \
