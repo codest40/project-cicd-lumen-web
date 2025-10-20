@@ -24,6 +24,7 @@ def get_db_connection():
     else:
       import psycopg
       onRender = False
+      onGithub = True
       print("Github Test environment detected")
       db_url = os.getenv("EXTERNAL_DB_URL")
 
@@ -33,7 +34,10 @@ def get_db_connection():
         return None
 
     try:
+# Import issues on Dev machine (Reason)
         if onRender:
+          conn = psycopg.connect(db_url)
+        elif onGithub:
           conn = psycopg.connect(db_url)
         else:
           conn = psycopg2.connect(db_url)
