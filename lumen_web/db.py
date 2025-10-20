@@ -22,7 +22,7 @@ def get_db_connection():
       db_url = os.getenv("EXTERNAL_DB_URL")
 
     else:
-      import psycopg2
+      import psycopg
       onRender = False
       print("Github Test environment detected")
       db_url = os.getenv("EXTERNAL_DB_URL")
