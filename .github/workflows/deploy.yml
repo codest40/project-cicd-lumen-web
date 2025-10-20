@@ -94,3 +94,20 @@ jobs:
             exit 1
           fi
 
+
+    # NNOTIFICATION
+      - name: Send email on failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "❌ Lumen Web Deploy Failed"
+          to: "rundailytest@gmail.com"
+          from: "GitHub CI <no-reply@Lumen_Web_App_Test.com>"
+          body: |
+            The Render deploy for Lumen Web failed.
+            Repo: ${{ github.repository }}
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

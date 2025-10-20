@@ -2,3 +2,4 @@ Flask==3.0.3
 psycopg
 python-dotenv
 gunicorn
+prometheus-flask-exporter

@@ -1,5 +1,4 @@
 import os
-import psycopg # as psycopg2
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,10 +10,13 @@ def is_running_on_render():
 def get_db_connection():
 
     if is_running_on_render():
+      import psycopg
+      onRender = True
       print("✅ Running inside Render environment")
       db_url = os.environ.get("DB_URL_INTERNAL")
 
     elif not is_running_on_render() and "DEV" == os.getenv("FLASK_APP"):
+      import psycopg2
       print("🧩 Local environment detected")
       db_url = os.getenv("EXTERNAL_DB_URL")
 
@@ -28,7 +30,11 @@ def get_db_connection():
         return None
 
     try:
-        conn = psycopg.connect(db_url)
+        if onRender:
+          conn = psycopg.connect(db_url)
+        else:
+          conn = psycopg2.connect(db_url)
+
         print("✅ Connected to PostgreSQL database!!")
         return conn
     except Exception as e:

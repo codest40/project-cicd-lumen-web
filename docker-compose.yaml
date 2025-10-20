@@ -22,8 +22,10 @@ services:
     container_name: lumen_web_container
     ports:
       - "5000:5000"                  # Expose container port 5000 to host
+    env_file:
+      - ./lumen_web/.env
     environment:
-      - DB_URL=${EXTERNAL_DB_URL}    # External DB URL (loaded from .env for portability)
+#      - DB_URL=${EXTERNAL_DB_URL}    # External DB URL (loaded from .env for portability)
       - METRICS_PATH=/metrics        # Endpoint Prometheus scrapes
     networks:
       - lumen_net                    # Shared custom network for inter-service communication

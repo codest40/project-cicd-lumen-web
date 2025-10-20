@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for
 from db import get_db_connection
+from prometheus_flask_exporter import PrometheusMetrics
 
 app = Flask(__name__)
+metrics = PrometheusMetrics(app)  # Attach Prometheus metrics to web
 
 @app.route('/')
 def login():
