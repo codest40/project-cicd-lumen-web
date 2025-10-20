@@ -17,10 +17,13 @@ def get_db_connection():
 
     elif not is_running_on_render() and "DEV" == os.getenv("FLASK_APP"):
       import psycopg2
+      onRender = False
       print("🧩 Local environment detected")
       db_url = os.getenv("EXTERNAL_DB_URL")
 
     else:
+      import psycopg2
+      onRender = False
       print("Github Test environment detected")
       db_url = os.getenv("EXTERNAL_DB_URL")
 
@@ -43,5 +46,5 @@ def get_db_connection():
 
 
 
-# if __name__ == "__main__":
-#   get_db_connection()
+if __name__ == "__main__":
+   get_db_connection()
