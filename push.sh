@@ -1,11 +1,11 @@
 
+msg=$1
 
-if [ -z "$1" ]; then
-  $1="None"
+if [ -z "$msg" ]; then
+  msg="None"
   echo "Empty Imput for $0"
-  echo "Default input now is $1"
-else
-  echo "Imput $1 is given for $0"
+#  echo "Default input now is $msg"
+
 fi
 
-git add . && git commit -m "New Commit Number $1" && git push
+git add . && git commit -m "New Commit Number $msg" && git push
