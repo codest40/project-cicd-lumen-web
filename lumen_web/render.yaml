@@ -9,4 +9,4 @@ services:
     startCommand: ./run_start.sh
     envVars:
       - key: DATABASE_URI
-        value: DB_URL_INTERNAL
+        value: DB_URL_EXTERNAL
