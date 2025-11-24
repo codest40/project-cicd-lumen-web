@@ -2,7 +2,7 @@
 # DOCKERFILE: LUMEN WEB FLASK APPLICATION
 # =======================================
 # Purpose:
-# Build and run a lightweight Python-based container for the Lumen Flask web app.
+# Build and run a lightweight Python-based container for the Lumen Flask web Api app.
 # Designed to work both locally and on Render with minimal dependencies.
 # ---------------------------------------
 # Base image:

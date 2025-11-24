@@ -1,5 +1,15 @@
 
-.git
-__pycache__
+
+__pycache__/
 .env
 .secrets
+
+.venv
+.b_venv
+.pc
+*test
+.empty
+
+py_env.sh
+test.py
+
