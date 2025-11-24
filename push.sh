@@ -1,1 +1,3 @@
-git add . && git commit -m "Another one" && git push
+
+if 
+git add . && git commit -m "New Commit Number $1" && git push

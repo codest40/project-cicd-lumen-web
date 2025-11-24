@@ -23,13 +23,13 @@ page = Blueprint("page", __name__)
 @page.get("/")
 async def home():
     # render_template is blocking — run it in a thread to keep the event loop free
-    rendered = await asyncio.to_thread(render_template, "index.html")
+    rendered = await asyncio.to_thread(render_template, "test.html")
     return rendered
 
 
-@page.get("/test")
+@page.get("/home")
 async def test():
-    rendered = await asyncio.to_thread(render_template, "test.html")
+    rendered = await asyncio.to_thread(render_template, "index.html")
     return rendered
 
 
