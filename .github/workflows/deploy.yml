@@ -2,13 +2,13 @@ name: CI/CD Pipeline - Lumen Web
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   test_build:
-    name:  Build & Test
+    name: Build & Test
     runs-on: ubuntu-latest
 
     services:
@@ -27,59 +27,67 @@ jobs:
           --health-retries=5
 
     env:
-      EXTERNAL_DB_URL: postgresql://postgres:password@localhost:5432/lumen_test
+      DB_URL_EXTERNAL: postgresql://postgres:password@localhost:5432/lumen_test
       PYTHONUNBUFFERED: 1
 
     steps:
-      - name: Checkout code
+      - name:  Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name:  Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name:  Install dependencies
         run: |
           cd lumen_web
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Lint code
+      - name:  Lint code
         run: |
           pip install flake8
           flake8 lumen_web --count --select=E9,F63,F7,F82 --show-source --statistics || true
 
-      - name: Run DB Connection Test
+      - name: 🧪 Test DB connection (CI Postgres)
         run: |
           python - <<'PYCODE'
-          from lumen_web.db import get_db_connection
-          conn = get_db_connection()
-          if conn:
-              print("✅ Database connection successful in CI")
-              conn.close()
-          else:
-              raise SystemExit("❌ Database test failed")
+          import asyncio
+          from lumen_web.db import get_pool
+
+          async def check():
+              try:
+                  pool = await get_pool()
+                  async with pool.acquire() as conn:
+                      await conn.execute("SELECT 1;")
+                  print("✅ CI Database connection test PASSED (container DB)")
+              except Exception as e:
+                  print("❌ CI Database connection FAILED:", e)
+                  raise
+
+          asyncio.run(check())
           PYCODE
 
-      - name: Build Docker image
+      - name:  Build Docker image
         run: docker build -t lumen_web-test ./lumen_web
 
   deploy:
-    name:  Deploy to Render
+    name: Deploy to Render
     runs-on: ubuntu-latest
     needs: test_build
     if: success() && !contains(github.event.head_commit.message, 'skip deploy')
+
     steps:
-      - name: Checkout code
+      - name:  Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy to Render
+      - name:  Deploy to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
           RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID_LUMEN }}
         run: |
-          echo "Triggering deploy on Render..."
+          echo " Triggering deploy on Render..."
           response=$(curl -s -o /tmp/response.json -w "%{http_code}" -X POST \
             -H "Accept: application/json" \
             -H "Authorization: Bearer $RENDER_API_KEY" \
@@ -87,16 +95,14 @@ jobs:
             https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys)
 
           if [ "$response" = "201" ]; then
-            echo "✅ Render deploy triggered successfully"
+            echo "✅ Render deploy triggered successfully!"
           else
-            echo "❌ Render deploy failed"
+            echo "❌ Render deploy failed:"
             cat /tmp/response.json
             exit 1
           fi
 
-
-    # NNOTIFICATION
-      - name: Send email on failure
+      - name:  Notify on failure
         if: failure()
         uses: dawidd6/action-send-mail@v3
         with:
@@ -108,6 +114,6 @@ jobs:
           to: "rundailytest@gmail.com"
           from: "GitHub CI <no-reply@Lumen_Web_App_Test.com>"
           body: |
-            The Render deploy for Lumen Web failed.
+            Render deploy for Lumen Web failed.
             Repo: ${{ github.repository }}
             Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
