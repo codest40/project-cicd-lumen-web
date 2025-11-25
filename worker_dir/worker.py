@@ -1,45 +1,46 @@
+# worker.py
 import asyncio
 import httpx
 import os
-import sys
-from db import get_pool
 from datetime import datetime
+from flask import Flask, jsonify
+import threading
+from db import get_pool
 
-CHECK_INTERVAL = 5  # seconds
-
+CHECK_INTERVAL = 5
 status = {"app": "UNKNOWN", "last_checked": None, "visitors": []}
 
+# -------------------------
+# HEALTH CHECK
+# -------------------------
 async def health_check():
-    print("[WORKER] Starting health check...")
-
     PING_URL = os.getenv("LUMEN_WEB_HEALTH_URL")
+
     if not PING_URL:
-        print("[WORKER] ENV LUMEN_WEB_HEALTH_URL is EMPTY, using localhost")
-        PING_URL = "http://localhost:5000/ping"
-    else:
-        print(f"LUMEN WEB HEALTH ENDPOINT FOUND: {LUMEN_WEB_HEALTH_URL}")
+        print("[WORKER] LUMEN_WEB_HEALTH_URL NOT SET")
+        return
+
+    print(f"[WORKER] Checking health: {PING_URL}")
 
     try:
         async with httpx.AsyncClient(timeout=10) as client:
-            print(f"[WORKER] Checking URL: {PING_URL}")
             resp = await client.get(PING_URL)
-            print(f"[WORKER] Status code: {resp.status_code}")
 
             if resp.status_code == 200:
                 status["app"] = "UP"
             else:
                 status["app"] = "DOWN"
+
     except Exception as e:
         print(f"[WORKER] Health check failed: {e}")
         status["app"] = "DOWN"
 
-    status["last_checked"] = datetime.utcnow()
-    print(f"[WORKER] Health result: {status['app']}")
+    status["last_checked"] = datetime.utcnow().isoformat()
 
-
+# -------------------------
+# FETCH VISITORS
+# -------------------------
 async def get_visitors():
-    print("[WORKER] Fetching visitors from DB...")
-
     try:
         pool = await get_pool()
         async with pool.acquire() as conn:
@@ -50,22 +51,36 @@ async def get_visitors():
                 {"name": r["name"], "time": r["visit_time"].isoformat()}
                 for r in rows
             ]
-        print("[WORKER] Visitors fetched OK")
     except Exception as e:
-        print(f"[WORKER] ERROR reading visitors: {e}")
+        print("[WORKER] Visitor fetch error:", e)
         status["visitors"] = []
 
-
+# -------------------------
+# MAIN LOOP
+# -------------------------
 async def worker_loop():
-    print("[WORKER] Worker loop started!")
+    print("[WORKER] Worker loop started...")
     while True:
-        print("[WORKER] Running cycle...")
         await health_check()
         await get_visitors()
-        print("[WORKER] STATUS:", status)
+        print("[WORKER] Status updated:", status)
         await asyncio.sleep(CHECK_INTERVAL)
 
+# -------------------------
+# EXPOSE STATUS API
+# -------------------------
+api = Flask(__name__)
 
+@api.get("/status")
+def status_endpoint():
+    return jsonify(status)
+
+def run_api():
+    api.run(host="0.0.0.0", port=10000)
+
+# -------------------------
+# STARTUP
+# -------------------------
 if __name__ == "__main__":
-    print("[WORKER] Running worker directly...")
+    threading.Thread(target=run_api, daemon=True).start()
     asyncio.run(worker_loop())

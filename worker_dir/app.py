@@ -1,19 +1,29 @@
+# app.py
 from flask import Flask, render_template
-import asyncio
-import threading
-from worker import worker_loop, status
+import requests
+import os
 
 app = Flask(__name__)
 
+WORKER_URL = os.getenv("LUMEN_WORKER_STATUS_URL")  # Set via render.yaml
+
 @app.route("/")
 def dashboard():
-    print("[FLASK] Dashboard requested")
+    status = {
+        "app": "UNKNOWN",
+        "last_checked": None,
+        "visitors": []
+    }
+
+    if WORKER_URL:
+        try:
+            resp = requests.get(WORKER_URL, timeout=5)
+            if resp.status_code == 200:
+                status = resp.json()
+        except Exception as e:
+            print("[WEB] Failed to reach worker:", e)
+
     return render_template("worker.html", status=status)
 
-def start_worker():
-    print("[FLASK] Starting background worker thread...")
-    asyncio.run(worker_loop())
-
-
-threading.Thread(target=start_worker, daemon=True).start()
-
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
