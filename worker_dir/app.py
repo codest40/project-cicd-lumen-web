@@ -18,4 +18,4 @@ if __name__ == "__main__":
     threading.Thread(target=start_worker_loop, daemon=True).start()
     
     # Start Flask server
-    app.run(host="0.0.0.0", port=5000)
+    # app.run(host="0.0.0.0", port=5000)

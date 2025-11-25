@@ -14,10 +14,11 @@ async def health_check():
             PING_URL = os.getenv("LUMEN_WEB_HEALTH_URL", "")
             if not PING_URL:
               print("Health Check Url Env Variable for Lumen_Web is EMPTY!")
-              sys.exit()
+              PING_URL =  "http://localhost:5000/ping"
 
-            async with session.get("http://localhost:5000/ping") as resp:
-                if resp.status == 200:
+            async with httpx.AsyncClient() as client:
+                resp = await client.get(PING_URL)
+                if resp.status_code == 200:
                     status["app"] = "UP"
                 else:
                     status["app"] = "DOWN"
