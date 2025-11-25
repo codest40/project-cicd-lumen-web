@@ -1,4 +1,5 @@
 
-Flask>=2.3.0,<2.4
-asyncpg>=1.1,<2.0
-aiohttp>=3.8,<4.0
+Flask==2.3.3
+asyncpg==1.1.0
+aiohttp==3.8.5
+
