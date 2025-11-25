@@ -116,7 +116,7 @@ jobs:
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: "❌ Lumen Web Deploy Failed"
-          to: "rundailytest@gmail.com"
+          to:  ${{ secrets.EMAIL_ADDRESS }}
           from: "GitHub CI <no-reply@Lumen_Web_App_Test.com>"
           body: |
             Render deploy for Lumen Web failed.
@@ -132,7 +132,7 @@ jobs:
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: "✔️ Lumen Web CI/CD Passed"
-          to: "rundailytest@gmail.com"
+          to: ${{ secrets.EMAIL_ADDRESS }}
           from: "GitHub CI <no-reply@Lumen_Web_App_Test.com>"
           body: |
             All tests and build for Lumen Web passed successfully. √
