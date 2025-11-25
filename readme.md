@@ -68,9 +68,9 @@ Grafana visualizes response times, API requests, and health logs.
 
 GitHub Actions pipeline builds, tests, and deploys the app automatically.
 
-Deploys to Render using API triggers.
+Deploys to Render using API triggers and sends success or failure Notification mails.
 
-Supports skipping deployments via commit messages.
+Supports skipping deployments via commit messages and skipping entirely if only README.md file is updated
 
 
 

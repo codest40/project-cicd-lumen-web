@@ -3,8 +3,13 @@ name: CI/CD Pipeline - Lumen Web
 on:
   push:
     branches: ["main"]
+    paths-ignore:
+      - 'README.md'
+      - 'test.md'
   pull_request:
     branches: ["main"]
+    paths-ignore:
+      - 'README.md'
 
 jobs:
   test_build:
