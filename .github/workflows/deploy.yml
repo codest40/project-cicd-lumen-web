@@ -50,7 +50,7 @@ jobs:
           pip install flake8
           flake8 lumen_web --count --select=E9,F63,F7,F82 --show-source --statistics || true
 
-      - name: 🧪 Test DB connection (CI Postgres)
+      - name:  Test DB connection (CI Postgres)
         run: |
           python - <<'PYCODE'
           import asyncio
@@ -61,7 +61,7 @@ jobs:
                   pool = await get_pool()
                   async with pool.acquire() as conn:
                       await conn.execute("SELECT 1;")
-                  print("✅ CI Database connection test PASSED (container DB)")
+                  print("✔️ CI Database connection test PASSED (container DB)")
               except Exception as e:
                   print("❌ CI Database connection FAILED:", e)
                   raise
@@ -115,5 +115,21 @@ jobs:
           from: "GitHub CI <no-reply@Lumen_Web_App_Test.com>"
           body: |
             Render deploy for Lumen Web failed.
+            Repo: ${{ github.repository }}
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      - name:  Notify on success
+        if: success()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "✔️ Lumen Web CI/CD Passed"
+          to: "rundailytest@gmail.com"
+          from: "GitHub CI <no-reply@Lumen_Web_App_Test.com>"
+          body: |
+            All tests and build for Lumen Web passed successfully. √
             Repo: ${{ github.repository }}
             Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
