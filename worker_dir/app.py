@@ -13,5 +13,3 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     loop.create_task(worker_loop())
 
-    # Start Flask normally (blocking)
-    app.run(host="0.0.0.0", port=5000)
