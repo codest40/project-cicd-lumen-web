@@ -5,7 +5,7 @@ from worker import worker_loop, status
 
 app = Flask(__name__)
 
-@app.route("/worker")
+@app.route("/")
 def dashboard():
     return render_template("worker.html", status=status)
 
