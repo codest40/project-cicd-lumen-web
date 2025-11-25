@@ -355,7 +355,7 @@ Flexibility to evolve from file-based JSON data to fully DB-backed architecture
 
 # 4. Setup & Installation
 
-Lumen Web can be run locally for development and testing or deployed to Render for production. This section explains all steps for both scenarios.
+Lumen Web can be run locally for development and testing on Linux server or deployed to Render, AWS etc for production. This section explains all steps for both scenarios.
 
 
 ---
