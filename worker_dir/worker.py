@@ -1,5 +1,5 @@
 import asyncio
-import aiohttp
+import httpx
 import os, sys
 from db import get_pool
 from datetime import datetime
@@ -9,7 +9,7 @@ CHECK_INTERVAL = 30  # seconds
 status = {"app": "UNKNOWN", "last_checked": None, "visitors": []}
 
 async def health_check():
-    async with aiohttp.ClientSession() as session:
+    async with httpx.ClientSession() as session:
         try:
             PING_URL = os.getenv("LUMEN_WEB_HEALTH_URL", "")
             if not PING_URL:
