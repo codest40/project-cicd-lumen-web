@@ -16,6 +16,8 @@ async def health_check():
     if not PING_URL:
         print("[WORKER] ENV LUMEN_WEB_HEALTH_URL is EMPTY, using localhost")
         PING_URL = "http://localhost:5000/ping"
+    else:
+        print(f"LUMEN WEB HEALTH ENDPOINT FOUND: {LUMEN_WEB_HEALTH_URL}")
 
     try:
         async with httpx.AsyncClient(timeout=10) as client:
