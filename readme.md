@@ -215,7 +215,22 @@ Prometheus scrapes metrics from the Flask app (/metrics endpoint).
 Grafana visualizes metrics like API request counts, response times, visitor logs, and health reports.
 
 
-4. Docker & Networking
+4. CI/CD Pipeline With GitHub Actions Workflow
+
+Located at .github/workflows/deploy.yml
+
+Stage Description Build & Test Spins up PostgreSQL in CI → installs dependencies → lints code → verifies DB connection Docker Build Builds the Docker image for the Flask app Deploy to Render On successful build/test, triggers a Render deploy via API using stored secrets and sends Email Notificatuons
+
+Secrets used:
+
+RENDER_API_KEY
+
+RENDER_SERVICE_ID
+
+Trigger: On push or PR to the main branch.
+
+
+5. Docker & Networking
 
 Locally orchestrated using Docker Compose:
 

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumen Web Worker Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .status {
+            padding: 10px 15px;
+            display: inline-block;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+        }
+        .up {
+            background-color: #27ae60; /* green */
+        }
+        .down {
+            background-color: #c0392b; /* red */
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #ecf0f1;
+            margin: 5px 0;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+        .timestamp {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lumen Web Worker Dashboard</h1>
+
+    <h2>App Status: 
+        <span class="status {% if status.app == 'UP' %}up{% else %}down{% endif %}">
+            {{ status.app }}
+        </span>
+    </h2>
+    <p class="timestamp">Last checked: {{ status.last_checked }}</p>
+
+    <h3>Recent Visitors</h3>
+    {% if status.visitors %}
+        <ul>
+            {% for v in status.visitors %}
+                <li>{{ v.name }} at {{ v.time }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No visitors yet.</p>
+    {% endif %}
+</body>
+</html>
