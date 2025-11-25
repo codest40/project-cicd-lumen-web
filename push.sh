@@ -1,8 +1,9 @@
 
 msg=$1
+now=$(date +"%Y-%m-%d %H:%M:%S")
 
 if [ -z "$msg" ]; then
-  msg="None"
+  msg=$now
   echo "Empty Imput for $0"
 #  echo "Default input now is $msg"
 
