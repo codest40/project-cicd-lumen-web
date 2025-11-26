@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 import httpx
 from flask import Flask, request
-from db import get_visitors
+from crud import get_visitors
 
 app = Flask(__name__)
 CHECK_INTERVAL = 8   # 8 seconds interval for health check
