@@ -604,4 +604,139 @@ If no match is found:
 
 
 
-#Summary:
+# Render Free Tier Limitations (Observed in This Project)
+
+Below are the constraints that affected architecture, CI/CD, worker logic, and deployment strategy.
+
+
+---
+
+# 1. Only Web & Static Web Are Free
+
+Render Free tier supports only 2 service types for free:
+
+Web Service (runs via HTTP)
+
+Static Web
+
+
+Not Free (Paid only):
+
+Background Worker Service
+
+Cron Jobs
+
+Private Services
+
+Deploy hooks with workers
+
+
+Impact:
+The intention is to monitor the Flask app with worker_dir as a background but it cannot run 100% as a real worker.
+
+Workaround: 
+Deploy it as a separate Web Service and call the main app using its external public URL.
+
+
+
+---
+
+# 2. Web Services Sleep / Suspend Easily
+
+All Free-tier services:
+
+Sleep after a few minutes of inactivity
+
+Cold start on first request (10–30 sec delay)
+
+Do not guarantee continuous uptime
+
+Can momentarily stop during internal rebalancing
+
+
+Impact:
+
+The “worker_dir service” stops tracking the app health whenever Render suspends it
+
+Cron-like or monitoring loops become unreliable
+
+Metrics become inconsistent (Prometheus scrapers time out)
+
+
+Workaround:
+
+Workers must:
+
+Use external heartbeat endpoints
+
+Attempt retries & exponential backoff
+
+Not rely on strict timing (e.g., every second)
+
+Expect downtime/restarts
+
+
+# 3. Free Postgres Has Expiration & Size Limits
+
+Render’s free PostgreSQL has:
+
+30-day expiration
+
+Shared, low-performance CPU
+
+very small disk quota (~100MB)
+
+connection caps (max 10 active)
+
+slow cold-start query response
+
+
+Impact:
+
+Long-term persistent data (jokes, names, metrics) could be lost
+
+Worker timeouts can occur when DB is slow
+
+Migrations restart because DB sleeps
+
+
+Workaround:
+Use JSON files inside the repo for long-lived, read-heavy data.
+This avoids database expiration and cold-start slowness.
+
+
+---
+
+# 4. No Docker, No Compose, No Multi-Container Networking
+
+Render Free tier does not support:
+
+docker-compose
+
+multi-container builds
+
+shared private networks between services
+
+
+Impact:
+Your local setup has:
+
+Flask + Prometheus + Grafana (docker-compose)
+
+But Render cannot replicate this.
+
+Workaround:
+
+Deploy each service separately
+
+Connect via public URLs
+
+Configure Prometheus scrape targets using Render’s domain names
+
+Grafana dashboards must be manually set up per deployment
+
+
+
+
+
+
