@@ -11,9 +11,6 @@
             background-color: #f9f9f9;
             color: #333;
         }
-        h1, h2, h3 {
-            color: #2c3e50;
-        }
         .status {
             padding: 10px 15px;
             display: inline-block;
@@ -21,12 +18,8 @@
             color: white;
             font-weight: bold;
         }
-        .up {
-            background-color: #27ae60; /* green */
-        }
-        .down {
-            background-color: #c0392b; /* red */
-        }
+        .up { background-color: #27ae60; }
+        .down { background-color: #c0392b; }
         ul {
             list-style-type: none;
             padding: 0;
@@ -37,31 +30,64 @@
             padding: 8px 12px;
             border-radius: 4px;
         }
-        .timestamp {
-            font-size: 0.9em;
-            color: #7f8c8d;
-        }
-    </style>
+</style>
 </head>
 <body>
     <h1>Lumen Web Worker Dashboard</h1>
 
-    <h2>App Status: 
-        <span class="status {% if status.app == 'UP' %}up{% else %}down{% endif %}">
-            {{ status.app }}
-        </span>
+    <h2>App Status:
+        <span id="appStatus" class="status">LOADING...</span>
     </h2>
-    <p class="timestamp">Last checked: {{ status.last_checked }}</p>
+    <p class="timestamp" id="lastChecked">Waiting...</p>
 
     <h3>Recent Visitors</h3>
-    {% if status.visitors %}
-        <ul>
-            {% for v in status.visitors %}
-                <li>{{ v.name }} at {{ v.time }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No visitors yet.</p>
-    {% endif %}
+    <ul id="visitorList">
+        <li>Loading...</li>
+    </ul>
+
 </body>
 </html>
+
+
+
+</script>
+async function loadVisitors() {
+    try {
+        const res = await fetch("/visitors");
+        const data = await res.json();
+
+        // --- Update health ---
+        const statusEl = document.getElementById("appStatus");
+        const lastCheckedEl = document.getElementById("lastChecked");
+
+        statusEl.textContent = data.health.app;
+        statusEl.className = "status " + (data.health.app === "UP" ? "up" : "down");
+        lastCheckedEl.textContent = "Last checked: " + data.health.last_checked;
+
+        // --- Update visitor list ---
+        const visitorList = document.getElementById("visitorList");
+        visitorList.innerHTML = "";
+
+        if (!data.visitors.length) {
+            visitorList.innerHTML = "<li>No visitors yet.</li>";
+            return;
+        }
+
+        data.visitors.forEach(v => {
+            const li = document.createElement("li");
+            li.textContent = `${v.ip} at ${v.time}`;
+            visitorList.appendChild(li);
+        });
+
+    } catch (e) {
+        console.error("Error loading visitors:", e);
+    }
+}
+
+// Load immediately on page load
+loadVisitors();
+
+// Refresh every 5 seconds
+setInterval(loadVisitors, 5000);
+
+</script>
