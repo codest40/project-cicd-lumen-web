@@ -3,12 +3,12 @@
 
 # Project Name:
 
-Lumen Web – Random Jokes & Celebrity Search API with CI/CD and Monitoring
+Lumen Web – CI/CD and Monitoring
 
 
 # Short Description:
 
-Lumen Web is a lightweight Flask-based web API that delivers random jokes and provides celebrity name search functionality. The project demonstrates modern DevOps and backend best practices including:
+Lumen Web is a cicd DevOps demonstration project. The deployed app is a lightweight Flask-based web API that delivers random jokes and provides celebrity name search functionality. The project demonstrates modern DevOps and backend best practices including:
 
 Async API design with Python + Flask
 
